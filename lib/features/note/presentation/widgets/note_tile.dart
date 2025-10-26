@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:personal_note/core/theme/app_pallete.dart';
+import 'package:personal_note/features/note/domain/entities/note.dart';
 import 'package:personal_note/features/note/presentation/screen/note_screen.dart';
-import '../../domain/entities/note.dart';
+
+import '../../../../config/app_pallete.dart';
 
 class NoteTile extends StatefulWidget {
   final Note note;
@@ -54,7 +55,7 @@ class _NoteTileState extends State<NoteTile> {
         margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: textP2),
         ),
@@ -82,11 +83,7 @@ class _NoteTileState extends State<NoteTile> {
               RichText(
                 text: TextSpan(
                   text: widget.note.title.isEmpty ? "Note is Locked" : widget.note.title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: Colors.black87,
-                  ),
+                  style: Theme.of(context).textTheme.titleLarge
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -99,12 +96,8 @@ class _NoteTileState extends State<NoteTile> {
           children: [
             RichText(
               text: TextSpan(
-                text: widget.note.title.isEmpty ? "Add Title..." : widget.note.title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                  color: Colors.black87,
-                ),
+                  text: widget.note.title.isEmpty ? "Add Title..." : widget.note.title,
+                  style: Theme.of(context).textTheme.titleLarge
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -113,10 +106,7 @@ class _NoteTileState extends State<NoteTile> {
             Flexible(
               child: Text(
                 widget.note.content,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.black54,
-                ),
+                style: Theme.of(context).textTheme.titleMedium,
                 maxLines: 12,
                 overflow: TextOverflow.ellipsis,
               ),

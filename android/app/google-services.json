@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1090867930059",
+    "project_id": "personalnote-8d8f1",
+    "storage_bucket": "personalnote-8d8f1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1090867930059:android:51dd6eef7a0381696b0c4e",
+        "android_client_info": {
+          "package_name": "pnote.com.app.personal_note"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1090867930059-5s3juo5e4e0cpmq6m148uu0bnlimum14.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pnote.com.app.personal_note",
+            "certificate_hash": "567138d4d1078817f113cec893831543a8152abb"
+          }
+        },
+        {
+          "client_id": "1090867930059-1vblmjg68c1p0t1n80k4306n819kncpu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAOTK_O7jo0n80u_m0rvYoWVZX8LsEnEg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1090867930059-1vblmjg68c1p0t1n80k4306n819kncpu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

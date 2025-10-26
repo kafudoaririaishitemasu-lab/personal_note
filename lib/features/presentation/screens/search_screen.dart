@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:personal_note/core/theme/app_pallete.dart';
-
-import '../note/presentation/cubit/note_cubit.dart';
-import '../note/presentation/screen/note_screen.dart';
-import '../note/presentation/widgets/note_tile.dart';
+import 'package:personal_note/features/note/presentation/bloc/note_bloc.dart';
+import '../../../config/app_pallete.dart';
+import '../../note/presentation/widgets/note_tile.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -29,24 +27,22 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: orange50,
       appBar: AppBar(
-        backgroundColor: orange50,
-        title: _buildSearchBar(),
-        leadingWidth: 25,
-        titleSpacing: 0,
+        elevation: 0,
+        title: const Text("Search Notes", style: TextStyle(fontWeight: FontWeight.bold)),
       ),
       body: Column(
         children: [
-          // 📋 Search Results
+          _buildSearchBar(),
+          /// List of Notes
           Expanded(
-            child: BlocBuilder<NotesCubit, NoteState>(
+            child: BlocBuilder<NoteBloc, NoteState>(
               builder: (context, state) {
                 if (state is NoteLoaded) {
                   final filtered = state.notes.where((note) {
                     final title = note.title.toLowerCase();
                     final content = note.content.toLowerCase();
-                    return title.contains(query) || content.contains(query);
+                    return (title.contains(query) || content.contains(query)) && note.isTrashed == false;
                   }).toList();
 
                   if (filtered.isEmpty) {
@@ -56,24 +52,9 @@ class _SearchScreenState extends State<SearchScreen> {
                   }
 
                   return ListView.builder(
+                    padding: const EdgeInsets.only(bottom: 80),
                     itemCount: filtered.length,
-                    itemBuilder: (context, index) {
-                      final note = filtered[index];
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => BlocProvider.value(
-                                value: context.read<NotesCubit>(),
-                                child: NoteScreen(note: note),
-                              ),
-                            ),
-                          );
-                        },
-                        child: NoteTile(note: note),
-                      );
-                    },
+                    itemBuilder: (context, index) => NoteTile(note: filtered[index]),
                   );
                 }
                 return const Center(child: CircularProgressIndicator());
@@ -90,12 +71,15 @@ class _SearchScreenState extends State<SearchScreen> {
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(30), // half circular bend
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.shade300,
-            blurRadius: 2,
+            color:
+            Theme.of(context).brightness == Brightness.light
+                ? grey300
+                : grey800,
+            blurRadius: 3,
             offset: const Offset(0, 2),
           ),
         ],
@@ -105,6 +89,9 @@ class _SearchScreenState extends State<SearchScreen> {
         decoration: const InputDecoration(
           icon: Icon(Icons.search, color: Colors.grey),
           hintText: "Search by title or content...",
+          hintStyle: TextStyle(
+            color: Colors.grey
+          ),
           border: InputBorder.none,
         ),
         onChanged: (value) {
