@@ -14,20 +14,17 @@ class NoteServiceImpl implements NoteService{
   NoteServiceImpl(this.connectionChecker, this.noteDataSource);
 
   @override
-  Future<Either<Failure, List<Note>>> getNotes() async{
-    try{
+  Future<Either<Failure, List<Note>>> getNotes() async {
+    try {
       final local = noteDataSource.getLocalNotes();
-      if(await connectionChecker.isConnected){
-        if(local.isEmpty){
+      if (local.isEmpty) {
+        if (await connectionChecker.isConnected) {
           final cloud = await noteDataSource.getCloudNotes();
           return right(cloud);
-        }else{
-          return right(local);
         }
-      }else{
-        return right(local);
       }
-    } on ServerException catch (e){
+      return right(local);
+    } on ServerException catch (e) {
       return left(Failure(e.message));
     }
   }

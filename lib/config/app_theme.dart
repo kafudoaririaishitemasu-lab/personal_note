@@ -4,7 +4,7 @@ import 'app_pallete.dart';
 class AppTheme {
   static ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
-    primaryColor: primaryColor,
+    primaryColor: lightPrimaryColor,
     shadowColor: grey300,
 
     scaffoldBackgroundColor: const Color(0xFFF7F7F7),

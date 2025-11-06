@@ -33,7 +33,7 @@ class AppDrawer extends StatelessWidget {
       child: Column(
         children: [
           UserAccountsDrawerHeader(
-            decoration: BoxDecoration(color: primaryColor),
+            decoration: BoxDecoration(color: lightPrimary),
             accountName: RichText(
                 text: TextSpan(
                     text: user != null
@@ -94,9 +94,9 @@ class AppDrawer extends StatelessWidget {
                       ? const Text("Dark Mode")
                       : const Text("Light Mode"),
                   trailing: Switch(
-                    activeThumbColor: lightPrimaryColor,
-                    activeTrackColor: primaryColor,
-                    inactiveTrackColor: grey300,
+                    activeThumbColor: darkPrimary,
+                    activeTrackColor: whiteColor,
+                    inactiveTrackColor: whiteColor,
                     value: value,
                     onChanged: _onToggle,
                   ),
@@ -104,13 +104,16 @@ class AppDrawer extends StatelessWidget {
               }
           ),
 
-          ListTile(
-            leading: const Icon(Icons.logout, color: transparentColor,),
-            title: const Text("     "),
-            splashColor: transparentColor,
+          GestureDetector(
             onLongPress: (){
               serviceLocator<AppRouter>().push(TrashNoteListScreen());
             },
+            child: Container(
+              margin: EdgeInsets.symmetric(vertical: 5),
+              width: screenWidth(context),
+              height: 50,
+              child: Text(" "),
+            ),
           )
         ],
       ),

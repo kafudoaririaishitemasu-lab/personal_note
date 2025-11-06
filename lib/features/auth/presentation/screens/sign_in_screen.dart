@@ -90,11 +90,9 @@ class _SignInScreenState extends State<SignInScreen> {
                         context,
                         message: "Welcome to your space 🫶",
                       );
-                      serviceLocator<AppRouter>().pushAndRemoveUntil(
-                        SplashScreen(),
-                      );
+                      serviceLocator<AppRouter>().pushAndRemoveUntil(SplashScreen(),);
                     } else if (state is AuthFailure) {
-                      UiSnack.showInfoSnackBar(blcCtx, message: state.message);
+                      UiSnack.showInfoSnackBar(blcCtx, message: state.message, isError: true);
                     }
                   },
                   builder: (blcCtx, state) {

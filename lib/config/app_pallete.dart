@@ -18,9 +18,22 @@ Color textP2 = Colors.purple.shade100;
 const Color dangerColor = Color(0xFFFF7043);
 
 
-// const Color lightBlue = Color(0xffe3f2fd);
-// const Color primaryBlue = Color(0xFF42A5F5);
+// Light Mode
+const lightPrimary = Color(0xFF3B82F6);
+const lightSecondary = Color(0xFF93C5FD);
+const lightBackground =  Color(0xFFFFFFFF);
+const lightSurface =  Color(0xFFF7F9FB);
+const lightTextPrimary =  Color(0xFF111827);
+const lightTextSecondary =  Color(0xFF6B7280);
+const lightLockedNoteTint =  Color(0xFFE0E7FF);
+const lightError = Color(0xFFEF4444);
 
-// --- Yellow Shades ---
-// Light Shade (For backgrounds, like NoteTile background when selected)
-// const Color lightPrimaryColor = Color(0xFFFFFDE7);
+// Dark Mode
+const darkPrimary = Color(0xFF60A5FA);
+const darkSecondary = Color(0xFF3B82F6);
+const darkBackground = Color(0xFF0F172A);
+const darkSurface = Color(0xFF1E293B);
+const darkTextPrimary = Color(0xFFF9FAFB);
+const darkTextSecondary = Color(0xFF94A3B8);
+const darkLockedNoteTint = Color(0xFF334155);
+const darkError = Color(0xFFF87171);

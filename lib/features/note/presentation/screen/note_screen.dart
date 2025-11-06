@@ -83,6 +83,7 @@ class _NoteScreenState extends State<NoteScreen> {
   void dispose() {
     _titleController.dispose();
     _contentController.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -92,9 +93,7 @@ class _NoteScreenState extends State<NoteScreen> {
       backgroundColor: Theme.of(context).cardColor,
       appBar: AppBar(
         title: Text(_isLocked ? "Note 🔒" : "Note 🔓"),
-        backgroundColor: Theme.of(context).brightness == Brightness.light
-            ? lightPrimaryColor
-            : primaryColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         actions: [
           Row(
             children: [
@@ -103,8 +102,8 @@ class _NoteScreenState extends State<NoteScreen> {
                 onChanged: _toggleLock,
                 inactiveTrackColor: whiteColor,
                 activeThumbColor: Theme.of(context).brightness == Brightness.light
-                    ? primaryColor
-                    : lightPrimaryColor,
+                    ? lightPrimary
+                    : darkPrimary,
               ),
               const SizedBox(width: 8),
               IconButton(
@@ -113,7 +112,7 @@ class _NoteScreenState extends State<NoteScreen> {
                     Icons.delete_forever,
                     color: Theme.of(context).brightness == Brightness.light
                         ? grey800
-                        : Theme.of(context).cardColor,
+                        : whiteColor,
                     size: screenWidth(context) * 0.07,
                   )
               )

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hive/hive.dart';
 import 'package:personal_note/core/error/exceptions.dart';
 
+import '../../../../core/utils/encryptor.dart';
 import '../../domain/entities/note.dart';
 
 abstract interface class NoteDataSource{
@@ -37,7 +38,14 @@ class NoteDataSourceImpl implements NoteDataSource{
   @override
   List<Note> saveNoteLocal({required Note note}) {
     notesBox.put(note.id, note);
-    final newNote = returnNewNote(note);
+    final newNote = Note(
+      id: note.id,
+      title: note.title,
+      content: note.content,
+      isLocked: note.isLocked,
+      isTrashed: note.isTrashed,
+      createdAt: note.createdAt,
+    );
     pendingBox.put(newNote.id, newNote);
     return notesBox.values.toList().reversed.toList();
   }
@@ -56,8 +64,8 @@ class NoteDataSourceImpl implements NoteDataSource{
             .collection('notes')
             .doc(note.id)
             .set({
-          'title': note.title,  /// encryptText(note.title)   TODO have to complete this feature
-          'content': note.content, ///encryptText(note.content),
+          'title': encrypt(note.title),  /// encryptText(note.title)   TODO have to complete this feature
+          'content': encrypt(note.content), ///encryptText(note.content),
           'isLocked': note.isLocked,
           'isTrashed': note.isTrashed,
           'createdAt': note.createdAt,
@@ -85,13 +93,8 @@ class NoteDataSourceImpl implements NoteDataSource{
       final user = auth.currentUser;
       if(user == null) return [];
 
-      if(pendingBox.isNotEmpty){
-        await uploadPendingNotes();
-      }
-
-      if(pendingDeleteBox.isNotEmpty){
-        await deletePendingNotes();
-      }
+      if(pendingBox.isNotEmpty) await uploadPendingNotes();
+      if(pendingDeleteBox.isNotEmpty) await deletePendingNotes();
 
       final snapshot = await firestore
           .collection('users')
@@ -99,17 +102,52 @@ class NoteDataSourceImpl implements NoteDataSource{
           .collection('notes')
           .orderBy('createdAt', descending: true)
           .get();
+      if(snapshot.docs.isEmpty) return [];
 
-      List<Note> notes = snapshot.docs.map((doc) {
-        return Note(
+      final List<Note> notes = [];
+
+      for (final doc in snapshot.docs) {
+        final data = doc.data();
+        final String title = (data['title'] ?? '') as String;
+        final String content = (data['content'] ?? '') as String;
+
+        String titleRaw;
+        String contentRaw;
+
+        try {
+          // Assume encrypted; if not, this throws.
+          titleRaw = decrypt(title);
+          contentRaw = decrypt(content);
+        } catch (_) {
+          // Not encrypted -> use plaintext for UI, but encrypt & update in DB.
+          titleRaw = title;
+          contentRaw = content;
+
+          String encTitle = "";
+          String encContent = "";
+
+          if(title.isNotEmpty) encTitle = encrypt(titleRaw);
+          if(content.isNotEmpty) encContent = encrypt(contentRaw);
+
+          await firestore.collection('users')
+              .doc(user.email)
+              .collection('notes')
+              .doc(doc.id)
+              .update({
+            'title': encTitle,  /// encryptText(note.title)   TODO have to complete this feature
+            'content': encContent, ///encryptText(note.content),
+          });
+        }
+
+        notes.add(Note(
           id: doc.id,
-          title: doc['title'],
-          content: doc['content'],
-          isLocked: doc['isLocked'] ?? false,
-          isTrashed: doc['isTrashed'] ?? false,
-          createdAt: doc['createdAt'],
-        );
-      }).toList();
+          title: titleRaw,
+          content: contentRaw,
+          isLocked: (data['isLocked'] ?? false) as bool,
+          isTrashed: (data['isTrashed'] ?? false) as bool,
+          createdAt: data['createdAt'],
+        ));
+      }
 
       notesBox.clear();
       /// Save cloud notes locally for offline
@@ -169,8 +207,8 @@ class NoteDataSourceImpl implements NoteDataSource{
               .collection('notes')
               .doc(pendingNote.id)
               .set({
-            'title': pendingNote.title,
-            'content': pendingNote.content,
+            'title': encrypt(pendingNote.title),
+            'content': encrypt(pendingNote.content),
             'isLocked': pendingNote.isLocked,
             'isTrashed': pendingNote.isTrashed,
             'createdAt': pendingNote.createdAt,
@@ -204,14 +242,4 @@ class NoteDataSourceImpl implements NoteDataSource{
     }
   }
 
-  Note returnNewNote(Note note){
-    return Note(
-      id: note.id,
-      title: note.title,
-      content: note.content,
-      isLocked: note.isLocked,
-      isTrashed: note.isTrashed,
-      createdAt: note.createdAt,
-    );
-  }
 }

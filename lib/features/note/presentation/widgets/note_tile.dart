@@ -59,33 +59,45 @@ class _NoteTileState extends State<NoteTile> {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: textP2),
         ),
-        constraints: const BoxConstraints(
-          maxHeight: 20.0 * 12,
-        ),
+        constraints: const BoxConstraints(maxHeight: 20.0 * 12),
         child: widget.note.isLocked
-            ? Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
+            ? ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Stack(
+            fit: StackFit.expand,
             children: [
-              const Icon(
-                  Icons.lock, size: 32,
-                  color: Colors.deepOrange,
-                shadows: [
-                  Shadow(
-                    color: Colors.grey,
-                    offset: Offset(0, 3),
-                    blurRadius: 15
-                  )
-                ],
-              ),
-              const SizedBox(height: 8),
-              RichText(
-                text: TextSpan(
-                  text: widget.note.title.isEmpty ? "Note is Locked" : widget.note.title,
-                  style: Theme.of(context).textTheme.titleLarge
+              Container(
+                decoration: BoxDecoration(
+
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Theme.of(context).dividerColor.withOpacity(0.3),
+                  ),
                 ),
-                overflow: TextOverflow.ellipsis,
+              ),
+              // Content: icon + title, centered
+              Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.visibility_off,
+                      size: 32,
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      widget.note.title.isEmpty ? "Note is Locked" : widget.note.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge
+                          ?.copyWith(fontWeight: FontWeight.w600),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -96,8 +108,8 @@ class _NoteTileState extends State<NoteTile> {
           children: [
             RichText(
               text: TextSpan(
-                  text: widget.note.title.isEmpty ? "Add Title..." : widget.note.title,
-                  style: Theme.of(context).textTheme.titleLarge
+                text: widget.note.title.isEmpty ? "Add Title..." : widget.note.title,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -117,4 +129,3 @@ class _NoteTileState extends State<NoteTile> {
     );
   }
 }
-

@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:personal_note/config/app_pallete.dart';
 import 'package:personal_note/core/router/app_router.dart';
+import 'package:personal_note/core/utils/snackbar.dart';
+import 'package:personal_note/core/utils/encryptor.dart';
 import 'package:personal_note/features/note/presentation/bloc/note_bloc.dart';
 import 'package:personal_note/features/presentation/screens/search_screen.dart';
 import 'package:personal_note/features/presentation/widgets/app_drawer.dart';
@@ -32,9 +34,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: const Text(
-          "My Notes",
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: GestureDetector(
+          child: const Text(
+            "My Notes",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
         ),
       ),
       drawer: AppDrawer(),
@@ -43,7 +47,8 @@ class _HomeScreenState extends State<HomeScreen> {
           builder: (context, state) {
             if (state is NoteLoading) {
               return const Center(child: CircularProgressIndicator());
-            } else if (state is NoteLoaded) {
+            }
+            else if (state is NoteLoaded) {
               final notes = state.notes
                   .where((note) => note.isTrashed == false)
                   .toList();
@@ -54,7 +59,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      serviceLocator<AppRouter>().push(
+                      serviceLocator<AppRouter>().pushWithContext(
+                        context,
                         SearchScreen(),
                         isMinimal: true,
                       );
@@ -110,15 +116,14 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: SpeedDial(
         icon: Icons.add,
         activeIcon: Icons.close,
-        backgroundColor: primaryColor,
+        backgroundColor: lightPrimary,
         foregroundColor: whiteColor,
         children: [
           SpeedDialChild(
-            child: Icon(Icons.note_add, color: blackColor,),
+            child: Icon(Icons.note_add),
             label: "New Note",
-            labelStyle: TextStyle(color: blackColor),
-            backgroundColor: lightPrimaryColor,
-            labelBackgroundColor: lightPrimaryColor,
+            // backgroundColor: lightSecondary,
+            // labelBackgroundColor: lightSecondary,
             onTap: () {
               final newNote = Note(
                 id: DateTime.now().millisecondsSinceEpoch.toString(),

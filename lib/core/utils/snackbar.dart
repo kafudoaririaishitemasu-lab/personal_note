@@ -5,7 +5,7 @@ class UiSnack {
   static void showInfoSnackBar(BuildContext context, {
     IconData? icon,
     required String message,
-    Color color = primaryColor,
+    Color color = lightSecondary,
     bool isError = false,
     Duration duration = const Duration(seconds: 1),
   }) {
@@ -26,7 +26,7 @@ class UiSnack {
             Expanded(
               child: Text(
                 message,
-                style: const TextStyle(fontSize: 15, color: Colors.white),
+                style: TextStyle(fontSize: 15, color: blackColor, fontWeight: FontWeight.bold),
               ),
             ),
           ],
