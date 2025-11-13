@@ -7,6 +7,4 @@ abstract interface class AuthService{
   Future<Either<Failure, User?>> signIn();
 
   Future<Either<Failure, bool>> signOut();
-
-  Future<Either<Failure, User>> getCurrentUser();
 }

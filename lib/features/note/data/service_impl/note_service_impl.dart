@@ -1,4 +1,3 @@
-
 import 'package:fpdart/fpdart.dart';
 import 'package:personal_note/core/error/exceptions.dart';
 import 'package:personal_note/core/error/failures.dart';
@@ -16,14 +15,13 @@ class NoteServiceImpl implements NoteService{
   @override
   Future<Either<Failure, List<Note>>> getNotes() async {
     try {
-      final local = noteDataSource.getLocalNotes();
-      if (local.isEmpty) {
         if (await connectionChecker.isConnected) {
           final cloud = await noteDataSource.getCloudNotes();
           return right(cloud);
+        }else{
+          final local = noteDataSource.getLocalNotes();
+          return right(local);
         }
-      }
-      return right(local);
     } on ServerException catch (e) {
       return left(Failure(e.message));
     }
@@ -36,7 +34,7 @@ class NoteServiceImpl implements NoteService{
         final res = await noteDataSource.saveNoteLocalAndCloud(note: note);
         return right(res);
       }else{
-        final res = noteDataSource.saveNoteLocal(note: note);
+        final res = await noteDataSource.saveNoteLocal(note: note);
         return right(res);
       }
     } on ServerException catch (e){

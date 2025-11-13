@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:personal_note/core/utils/storage_manager.dart';
 import 'package:personal_note/features/auth/data/service_impl/auth_service_impl.dart';
 import 'package:personal_note/features/auth/domain/service/auth_service.dart';
 import 'package:personal_note/features/auth/domain/usecases/google_login.dart';
@@ -46,6 +48,8 @@ Future<void> initDependencies() async {
   serviceLocator.registerLazySingleton(() => AppRouter());
   serviceLocator.registerLazySingleton(() => FirebaseAuth.instance);
   serviceLocator.registerLazySingleton(() => FirebaseFirestore.instance);
+  serviceLocator.registerLazySingleton(() => const FlutterSecureStorage());
+  serviceLocator.registerLazySingleton(() => StorageManager());
 
   /// App use cubits
   serviceLocator.registerLazySingleton(() => NetworkCubit());
@@ -72,9 +76,7 @@ Future<void> _initializeGoogleSignIn() async {
 Future<void> _initHive() async {
   await Hive.initFlutter();
   Hive.registerAdapter(NoteAdapter());
-  await Hive.openBox<Note>('notes');
-  await Hive.openBox<Note>('pendingNotes');
-  await Hive.openBox<Note>('pendingDeleteNotes');
+  // await Hive.openBox<Note>("notesBox");
 }
 
 void _initTheme() async {
@@ -84,7 +86,7 @@ void _initTheme() async {
 void _initAuth() {
   serviceLocator
     ..registerFactory<AuthDataSource>(
-      () => AuthDataSourceImpl(serviceLocator(), serviceLocator()),
+      () => AuthDataSourceImpl(serviceLocator(), serviceLocator(), serviceLocator()),
     )
     ..registerFactory<AuthService>(
       () => AuthServiceImpl(serviceLocator(), serviceLocator()),
@@ -102,7 +104,7 @@ void _initAuth() {
 void _initNote() {
   serviceLocator
     ..registerFactory<NoteDataSource>(
-      () => NoteDataSourceImpl(serviceLocator(), serviceLocator()),
+      () => NoteDataSourceImpl(serviceLocator(), serviceLocator(), serviceLocator()),
     )
     ..registerFactory<NoteService>(
       () => NoteServiceImpl(serviceLocator(), serviceLocator()),

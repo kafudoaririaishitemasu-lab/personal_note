@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:personal_note/config/app_pallete.dart';
 import 'package:personal_note/core/common/cibits/app_user_cubit/app_user_cubit.dart';
 import 'package:personal_note/core/utils/snackbar.dart';
+import 'package:personal_note/core/utils/storage_manager.dart';
 import 'package:personal_note/features/auth/presentation/screens/sign_in_screen.dart';
 import 'package:personal_note/features/presentation/screens/home_screen.dart';
 
 import '../../../../core/network/network_guard.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../init_dependencies.dart';
+import '../../../core/utils/screen_size.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -31,13 +34,18 @@ class _SplashScreenState extends State<SplashScreen> {
     if (_navigated) return;
     _navigated = true;
     try {
-      final user = serviceLocator<AppUserCubit>().auth.currentUser;
-      if (user != null) {
+      final isLoggedIn = serviceLocator<AppUserCubit>().checkUserLogin();
+       final ds = serviceLocator<StorageManager>();
+      if (isLoggedIn) {
+        final userId = (context.read<AppUserCubit>().state as AppUserLoggedIn).user.uid;
+        await ds.openForUser(userId);
         serviceLocator<AppRouter>().pushAndRemoveUntil(HomeScreen());
-      } else {
+      }
+      else {
         serviceLocator<AppRouter>().pushAndRemoveUntil(SignInScreen());
       }
     } catch (e) {
+      if(!mounted) return;
       UiSnack.showInfoSnackBar(context, message: e.toString());
       serviceLocator<AppRouter>().pushAndRemoveUntil(SignInScreen());
     }
@@ -52,10 +60,15 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Scaffold(
             backgroundColor: whiteColor,
             body: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset("assets/images/logo.png"),
+                Center(
+                  child: Image.asset(
+                    "assets/images/splashIMG.png",
+                    width: screenWidth(context) * 0.4,
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ],
             )
         )

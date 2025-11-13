@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:personal_note/config/app_pallete.dart';
+import 'package:personal_note/core/utils/loader.dart';
 import 'package:personal_note/features/note/presentation/bloc/note_bloc.dart';
 
 import '../widgets/note_tile.dart';
@@ -25,10 +26,10 @@ class _TrashNoteListScreenState extends State<TrashNoteListScreen> {
       body: SafeArea(
           child: BlocBuilder<NoteBloc, NoteState>(
               builder: (context, state) {
-                if(state is NoteLoading){
-                  return const Center(child: CircularProgressIndicator(color: primaryColor));
+                if(state is NoteLoading) {
+                  return loader();
                 }
-                else if(state is NoteLoaded){
+                else if(state is NoteLoaded) {
                   final notes = state.notes.where((note) => note.isTrashed == true).toList();
                   if(notes.isEmpty){
                     return const Center(child: Text("No notes yet. Create one!"));
@@ -72,7 +73,8 @@ class _TrashNoteListScreenState extends State<TrashNoteListScreen> {
                       ),
                     ],
                   );
-                }else{
+                }
+                else{
                   return const Center(child: Text("Something went wrong!"));
                 }
               }

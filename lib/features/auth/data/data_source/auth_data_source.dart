@@ -1,18 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:personal_note/core/utils/storage_manager.dart';
 
 abstract interface class AuthDataSource{
   Future<User?> signIn();
 
   Future<bool> signOut();
-
-  User? getCurrentUser();
 }
 
 class AuthDataSourceImpl implements AuthDataSource {
   final FirebaseAuth auth;
   final GoogleSignIn googleSignIn;
-  const AuthDataSourceImpl(this.auth, this.googleSignIn);
+  final StorageManager storageManager;
+  const AuthDataSourceImpl(this.auth, this.googleSignIn, this.storageManager);
 
   @override
   Future<User?> signIn() async{
@@ -52,17 +52,10 @@ class AuthDataSourceImpl implements AuthDataSource {
     try {
       await googleSignIn.signOut();
       await auth.signOut();
+      await storageManager.closeBoxes();
       return true;
     } catch (e) {
       return false;
     }
   }
-
-  /// Get the current signed-in Firebase user.
-  @override
-  User? getCurrentUser() {
-    return auth.currentUser;
-  }
-
-  Stream<User?> get authStateChanges => auth.authStateChanges();
 }

@@ -21,15 +21,10 @@ class AuthServiceImpl implements AuthService{
       }
       final User? response = await authDataSource.signIn();
       if(response != null){
-        final email = response.email ?? "";
-        if(email == ""){
-          throw ServerException("Failed to SignIn");
-        }
-      await setEncryptionKeyAndToken(email);
+        return right(response);
       }else{
         throw ServerException("Failed to SignIn");
       }
-      return right(response);
     }on ServerException catch(e){
       return left(Failure(e.message));
     }
@@ -40,27 +35,9 @@ class AuthServiceImpl implements AuthService{
   Future<Either<Failure, bool>> signOut() async{
     try{
       final res = await authDataSource.signOut();
-      await deleteEncryptionKeyAndToken();
       return right(res);
     }on Exception catch (e){
       return left(Failure(e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<Failure, User>> getCurrentUser() async{
-    try{
-      if(!await (connectionChecker.isConnected)){
-        return left(Failure('No Internet Connection'));
-      }
-      final User? response = authDataSource.getCurrentUser();
-      if(response != null){
-        return right(response);
-      }else{
-        return left(Failure("User not Logged In"));
-      }
-    }on ServerException catch(e){
-      return left(Failure(e.message));
     }
   }
 }

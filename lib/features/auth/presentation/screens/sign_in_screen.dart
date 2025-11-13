@@ -6,6 +6,7 @@ import 'package:personal_note/config/app_pallete.dart';
 import 'package:personal_note/core/common/cibits/internet_cubit/network_cubit.dart';
 import 'package:personal_note/core/network/network_guard.dart';
 import 'package:personal_note/core/router/app_router.dart';
+import 'package:personal_note/core/utils/loader.dart';
 import 'package:personal_note/core/utils/screen_size.dart';
 import 'package:personal_note/core/utils/snackbar.dart';
 import 'package:personal_note/features/auth/presentation/auth_bloc/auth_bloc.dart';
@@ -53,9 +54,16 @@ class _SignInScreenState extends State<SignInScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Image.asset(
-                  "assets/images/logo.png",
-                  width: screenWidth(context) * 0.3,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(34),
+                  child: Container(
+                    color: Colors.red,
+                    child: Image.asset(
+                      "assets/images/logo.png",
+                      width: screenWidth(context) * 0.3,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 RichText(
@@ -90,50 +98,62 @@ class _SignInScreenState extends State<SignInScreen> {
                         context,
                         message: "Welcome to your space 🫶",
                       );
-                      serviceLocator<AppRouter>().pushAndRemoveUntil(SplashScreen(),);
-                    } else if (state is AuthFailure) {
+                      serviceLocator<AppRouter>().pushAndRemoveUntil(SplashScreen());
+                    }
+                    else if (state is AuthFailure) {
                       UiSnack.showInfoSnackBar(blcCtx, message: state.message, isError: true);
+                    }
+                    else if(state is AuthLoading){
+                      showDialog(
+                        context: blcCtx,
+                        barrierDismissible: false, // user can't dismiss manually
+                        builder: (_) => loader(),
+                      );
                     }
                   },
                   builder: (blcCtx, state) {
-                    return ElevatedButton(
-                      onPressed: state is AuthLoading ? () {} : _handleSignIn,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                        elevation: 5,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                          side: const BorderSide(
-                            color: Colors.grey,
-                            width: 0.5,
-                          ),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: screenWidth(context) * 0.03,
-                          vertical: screenHeight(context) * 0.015,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Image.asset(
-                              'assets/images/glogo.png',
-                              height: screenWidth(context) * 0.06,
-                            ),
-                            SizedBox(width: screenWidth(context) * 0.035),
-                            Text(
-                              'Continue with Google',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF3C4043),
+                    return Column(
+                      children: [
+                        ElevatedButton(
+                          onPressed: state is AuthLoading ? () {} : _handleSignIn,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            elevation: 5,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              side: const BorderSide(
+                                color: Colors.grey,
+                                width: 0.5,
                               ),
                             ),
-                          ],
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: screenWidth(context) * 0.03,
+                              vertical: screenHeight(context) * 0.015,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Image.asset(
+                                  'assets/images/glogo.png',
+                                  height: screenWidth(context) * 0.06,
+                                ),
+                                SizedBox(width: screenWidth(context) * 0.035),
+                                Text(
+                                  'Continue with Google',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xFF3C4043),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     );
                   },
                 ),
@@ -149,18 +169,6 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-
-                // TextButton(
-                //   onPressed: () async {
-                //     final res = await AuthService().signOut();
-                //     if (res == "Success") {
-                //       UiSnack.showInfoSnackBar(context, message: "Log out");
-                //     } else {
-                //       UiSnack.showInfoSnackBar(context, message: "Failed");
-                //     }
-                //   },
-                //   child: Text("Log out"),
-                // ),
               ],
             ),
           ),

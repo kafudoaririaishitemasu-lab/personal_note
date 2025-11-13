@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:personal_note/core/utils/loader.dart';
 import 'package:personal_note/features/note/presentation/bloc/note_bloc.dart';
 import '../../../config/app_pallete.dart';
 import '../../note/presentation/widgets/note_tile.dart';
@@ -57,7 +58,9 @@ class _SearchScreenState extends State<SearchScreen> {
                     itemBuilder: (context, index) => NoteTile(note: filtered[index]),
                   );
                 }
-                return const Center(child: CircularProgressIndicator());
+                else{
+                  return loader();
+                }
               },
             ),
           ),

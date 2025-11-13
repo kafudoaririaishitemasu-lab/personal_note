@@ -3,10 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:personal_note/config/app_pallete.dart';
 import 'package:personal_note/core/router/app_router.dart';
+import 'package:personal_note/core/utils/loader.dart';
 import 'package:personal_note/core/utils/snackbar.dart';
 import 'package:personal_note/core/utils/encryptor.dart';
 import 'package:personal_note/features/note/presentation/bloc/note_bloc.dart';
 import 'package:personal_note/features/presentation/screens/search_screen.dart';
+import 'package:personal_note/features/presentation/screens/splash_screen.dart';
 import 'package:personal_note/features/presentation/widgets/app_drawer.dart';
 import 'package:personal_note/init_dependencies.dart';
 import '../../note/domain/entities/note.dart';
@@ -25,8 +27,12 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<NoteBloc>().add(NoteGetEvent());
+      getNoteEvent();
     });
+  }
+
+  void getNoteEvent() {
+    context.read<NoteBloc>().add(NoteGetEvent());
   }
 
   @override
@@ -46,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: BlocBuilder<NoteBloc, NoteState>(
           builder: (context, state) {
             if (state is NoteLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return loader();
             }
             else if (state is NoteLoaded) {
               final notes = state.notes
@@ -107,7 +113,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               );
-            } else {
+            }
+            else {
               return const Center(child: Text("Something went wrong"));
             }
           },
